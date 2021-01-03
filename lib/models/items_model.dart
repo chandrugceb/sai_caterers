@@ -3,6 +3,7 @@ import 'package:sai_caterers/models/item_category_model.dart';
 
 import 'item_model.dart';
 
+//init_firebase
 class Items extends ChangeNotifier{
   List<Item> items = [];
   void addItem(Item item){
