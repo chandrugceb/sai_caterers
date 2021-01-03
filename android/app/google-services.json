@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "581033052434",
+    "firebase_url": "https://saicaterers-8ab91.firebaseio.com",
+    "project_id": "saicaterers-8ab91",
+    "storage_bucket": "saicaterers-8ab91.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581033052434:android:b09019c1ba61e1ff874bcb",
+        "android_client_info": {
+          "package_name": "com.sai.sai_caterers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "581033052434-f0b3ca6asrolho6gjsi9rf028n6fr2rf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACa1Q4AlFSVQ7Ejawqyx-n_CRCzmRYW5c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "581033052434-f0b3ca6asrolho6gjsi9rf028n6fr2rf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
