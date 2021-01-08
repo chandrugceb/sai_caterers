@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' hide BuildContext;
 import 'package:sai_caterers/models/item_category_model.dart';
 import 'package:sai_caterers/models/item_model.dart';
-import 'package:sai_caterers/models/items_model.dart';
+import 'package:sai_caterers/providers/item_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class EditItemScreen extends StatefulWidget {
   Item _item;
@@ -19,16 +20,22 @@ class EditItemScreen extends StatefulWidget {
 
 class _EditItemScreenState extends State<EditItemScreen> {
   Item _item;
-  Items _items;
+  ItemProvider _itemProvider;
   bool _edit;
   String _itemName;
   double _unitPrice;
   ItemCategory _itemCategory;
   BuildContext contextItemWidget;
+  Uuid _uuid;
   final Function() refresh;
-  _EditItemScreenState(this._item, this.contextItemWidget, this._edit, this.refresh) {
-    this._items = Provider.of<Items>(contextItemWidget, listen: false);
-    _edit ? null: _itemCategory = ItemCategory.sweet;
+  _EditItemScreenState(this._item, this.contextItemWidget, this._edit, this.refresh);
+
+  @override
+  void initState() {
+    this._itemProvider = Provider.of<ItemProvider>(contextItemWidget, listen: false);
+    _edit ? null: _itemCategory = ItemCategory.SWEET;
+    _uuid = new Uuid();
+    super.initState();
   }
 
   @override
@@ -148,10 +155,10 @@ class _EditItemScreenState extends State<EditItemScreen> {
                 ),
                 onPressed: () {
                   _edit?
-                      _items.editItem(_item)
-                  :_items.addItem(createItem(_itemName, _unitPrice, _itemCategory));
-                      Navigator.pop(context);
-                      this.refresh();
+                      _itemProvider.editItem(this._item)
+                      :_itemProvider.addItem(createItem(_itemName, _unitPrice, _itemCategory));
+                  Navigator.pop(context);
+                  this.refresh();
                 },
               ),
             ]),
@@ -161,8 +168,13 @@ class _EditItemScreenState extends State<EditItemScreen> {
 
   Item createItem(
       String itemName, double unitPrice, ItemCategory itemCategory) {
-    Item item = new Item(DateTime.now().millisecondsSinceEpoch, itemName, null, null,
-        itemCategory, unitPrice);
+    Item item = new Item(
+        itemId: _uuid.v1(),
+        itemName: itemName,
+        itemDescription: null,
+        itemCategory: itemCategory,
+        unitPrice: unitPrice
+    );
     print(item);
     return item;
   }

@@ -1,1 +1,1 @@
-enum ItemCategory{sweet, tiffin, meals, snacks, disposbles}
+enum ItemCategory{SWEET, TIFFIN, MEALS, SNACKS, DISPOSABLES}
