@@ -9,28 +9,32 @@ import 'package:sai_caterers/models/plate_model.dart';
 import 'package:sai_caterers/screens/edit_item_screen.dart';
 import 'package:sai_caterers/widgets/items/item_widget.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ItemsWidget extends StatefulWidget {
   final BuildContext _plateContext;
   ItemsWidget(this._plateContext);
+  final spinkit = SpinKitRipple(
+    color: Colors.deepOrange,
+    size: 200.0,
+  );
 
-  _ItemsWidgetState createState() => _ItemsWidgetState(this._plateContext);
+  _ItemsWidgetState createState() => _ItemsWidgetState();
 }
 
 class _ItemsWidgetState extends State<ItemsWidget> {
-  BuildContext _plateContext;
   Plate _plate;
   ItemProvider _itemProvider;
   Uuid _uuid;
-  _ItemsWidgetState(this._plateContext) {
+  _ItemsWidgetState() {
     _uuid = new Uuid();
   }
 
   @override
   void initState() {
-    if (_plateContext != null) {
-      _plate = Provider.of<Plate>(_plateContext);
-      _itemProvider = Provider.of<ItemProvider>(_plateContext);
+    if (widget._plateContext != null) {
+      _plate = Provider.of<Plate>(widget._plateContext);
+      _itemProvider = Provider.of<ItemProvider>(widget._plateContext);
     }
 
     super.initState();
@@ -38,29 +42,17 @@ class _ItemsWidgetState extends State<ItemsWidget> {
 
   @override
   Widget build(BuildContext _itemsContext) {
-    if (_plateContext == null) {
+    if (widget._plateContext == null) {
       _itemProvider = Provider.of<ItemProvider>(_itemsContext);
     }
     return DefaultTabController(
       length: 5,
       child: Scaffold(
         appBar: AppBar(
-          actions: [
-            IconButton(
-              icon: Icon(Icons.send),
-              onPressed: () {
-                _itemProvider.addItem(new Item(
-                    itemId: _uuid.v1(),
-                    itemName: "Item" + _uuid.v1(),
-                    itemCategory: ItemCategory.SWEET,
-                    unitPrice: 1.2));
-              },
-            )
-          ],
           title: Center(
-              child: _plateContext == null
+              child: widget._plateContext == null
                   ? Text("ITEMS")
-                  : Text("${this._plate.plateItems.length} items selected")),
+                  : Text("SELECT ITEMS")),
           bottom: TabBar(
             isScrollable: true,
             labelColor: Colors.white,
@@ -76,8 +68,6 @@ class _ItemsWidgetState extends State<ItemsWidget> {
               child: StreamBuilder<List<Item>>(
                 stream: _itemProvider.items,
                 builder: (context, snapshot) {
-                  print(snapshot.connectionState);
-                  print(snapshot.hasData);
                         if (snapshot.connectionState == ConnectionState.active) {
                         if (snapshot.hasData) {
                           return ListView.builder(
@@ -93,11 +83,11 @@ class _ItemsWidgetState extends State<ItemsWidget> {
                                         (item) => item.itemCategory == itemCategory)
                                     .toList()[index];
                                 bool isSelected;
-                                if (_plateContext != null) {
+                                if (widget._plateContext != null) {
                                   isSelected = this._plate.isItemExists(item);
                                 }
                                 return new ItemWidget(
-                                    item, isSelected, _plateContext, this.refresh);
+                                    item, isSelected, widget._plateContext, refresh);
                               });
                         }
                         else {
@@ -105,7 +95,7 @@ class _ItemsWidgetState extends State<ItemsWidget> {
                         }
                         }
                       else {
-                        return Container();
+                        return widget.spinkit;
                         }
                     }
 
@@ -113,7 +103,7 @@ class _ItemsWidgetState extends State<ItemsWidget> {
             );
           }).toList(),
         ),
-        floatingActionButton: (this._plateContext == null)
+        floatingActionButton: (widget._plateContext == null)
             ? FloatingActionButton(
                 onPressed: () {
                   showDialog(
@@ -129,7 +119,7 @@ class _ItemsWidgetState extends State<ItemsWidget> {
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold))),
                         content: EditItemScreen(
-                            null, _itemsContext, false, this.refresh),
+                            null, _itemsContext, false, refresh),
                       );
                     },
                   );
@@ -142,8 +132,9 @@ class _ItemsWidgetState extends State<ItemsWidget> {
     );
   }
 
-  refresh() {
-    print(this._itemProvider.items.length);
-    setState(() {});
+  void refresh(){
+    setState(() {
+
+    });
   }
 }
