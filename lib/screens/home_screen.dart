@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'  hide BuildContext;
-import 'package:sai_caterers/models/items_model.dart';
+import 'package:sai_caterers/providers/item_provider.dart';
 import 'package:sai_caterers/widgets/dashboard/dashboard_widget.dart';
 import 'package:sai_caterers/widgets/items/items_widget.dart';
 import 'package:sai_caterers/widgets/orders/orders_widget.dart';
@@ -23,18 +23,18 @@ class _HomeScreenState extends State<HomeScreen> {
     PlatesWidget()
   ];
 
-  Items items;
+  ItemProvider _itemProvider;
+
+  @override
+  void initState() {
+    _itemProvider = new ItemProvider();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    databaseReference.child("flutterDevsTeam1").set({
-      'name': 'Deepak Nishad',
-      'description': 'Team Lead'
-    });
-    items = new Items();
-    items.loadDummyData();
     return ChangeNotifierProvider(
-      create: (context) => items,
+      create: (context) => _itemProvider,
       child: Scaffold(
         body: _children[_currentTab],
         bottomNavigationBar: BottomNavigationBar(

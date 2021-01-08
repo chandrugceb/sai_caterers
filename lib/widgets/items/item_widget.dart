@@ -16,7 +16,10 @@ class ItemWidget extends StatefulWidget {
   Plate _plate;
   BuildContext _plateContext;
   final Function() refresh;
-  ItemWidget(this._item, this.isSelected, this._plateContext, this.refresh);
+  ItemWidget(this._item, this.isSelected, this._plateContext, this.refresh){
+    print("ItemWidget Constructor ______ " + this._item.itemName);
+    createState();
+  }
 
   _ItemWidgetState createState() =>
       _ItemWidgetState(this._item, this.isSelected, this._plateContext, this.refresh);
@@ -32,29 +35,31 @@ class _ItemWidgetState extends State<ItemWidget> {
   BuildContext _plateContext;
   final Function() refresh;
 
-  _ItemWidgetState(this._item, this.isSelected, this._plateContext, this.refresh);
+  _ItemWidgetState(this._item, this.isSelected, this._plateContext, this.refresh){
+    print("ItemWidgetState Constructor ______ " + this._item.itemName);
+  }
 
   @override
   Widget build(BuildContext contextItemWidget) {
     print("________ItemWidget for " + this._item.itemName);
     if (this._plateContext != null) {
-      _plate = Provider.of<Plate>(_plateContext);
+      _plate = Provider.of<Plate>(_plateContext, listen: false);
     }
     _width = MediaQuery.of(contextItemWidget).size.width;
     switch (this._item.itemCategory) {
-      case ItemCategory.sweet:
+      case ItemCategory.SWEET:
         itemColor = Colors.deepOrange;
         break;
-      case ItemCategory.tiffin:
+      case ItemCategory.TIFFIN:
         itemColor = Colors.purpleAccent;
         break;
-      case ItemCategory.snacks:
+      case ItemCategory.SNACKS:
         itemColor = Colors.yellowAccent;
         break;
-      case ItemCategory.meals:
+      case ItemCategory.MEALS:
         itemColor = Colors.green;
         break;
-      case ItemCategory.disposbles:
+      case ItemCategory.DISPOSABLES:
         itemColor = Colors.grey;
         break;
       default:

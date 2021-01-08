@@ -2,26 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' hide BuildContext;
 import 'package:flutter/foundation.dart';
-import 'package:sai_caterers/models/entry_model.dart';
 import 'package:sai_caterers/models/item_category_model.dart';
 import 'package:sai_caterers/models/item_model.dart';
-import 'package:sai_caterers/models/items_model.dart';
+import 'package:sai_caterers/providers/item_provider.dart';
 import 'package:sai_caterers/models/plate_model.dart';
 import 'package:sai_caterers/screens/edit_item_screen.dart';
-import 'package:sai_caterers/services/firestore_service.dart';
 import 'package:sai_caterers/widgets/items/item_widget.dart';
+import 'package:uuid/uuid.dart';
 
 class ItemsWidget extends StatefulWidget {
-  BuildContext _plateContext;
-  Plate _plate;
-  Items _items;
-
-  ItemsWidget(this._plateContext) {
-    if (_plateContext != null) {
-      _plate = Provider.of<Plate>(_plateContext);
-      _items = Provider.of<Items>(_plateContext);
-    }
-  }
+  final BuildContext _plateContext;
+  ItemsWidget(this._plateContext);
 
   _ItemsWidgetState createState() => _ItemsWidgetState(this._plateContext);
 }
@@ -29,42 +20,46 @@ class ItemsWidget extends StatefulWidget {
 class _ItemsWidgetState extends State<ItemsWidget> {
   BuildContext _plateContext;
   Plate _plate;
-  Items _items;
-  FirestoreService firestoreService;
-
+  ItemProvider _itemProvider;
+  Uuid _uuid;
   _ItemsWidgetState(this._plateContext) {
-    if (_plateContext != null) {
-      _plate = Provider.of<Plate>(_plateContext);
-      _items = Provider.of<Items>(_plateContext);
-    }
+    _uuid = new Uuid();
   }
 
   @override
   void initState() {
-    firestoreService = new FirestoreService();
+    if (_plateContext != null) {
+      _plate = Provider.of<Plate>(_plateContext);
+      _itemProvider = Provider.of<ItemProvider>(_plateContext);
+    }
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext _itemsContext) {
     if (_plateContext == null) {
-      _items = Provider.of<Items>(_itemsContext);
+      _itemProvider = Provider.of<ItemProvider>(_itemsContext);
     }
     return DefaultTabController(
       length: 5,
       child: Scaffold(
         appBar: AppBar(
-          actions: [IconButton(icon: Icon(Icons.send),
-            onPressed: (){
-            print("I'm here 1");
-            // firestoreService.getEntries().length.then((value) => print("I'm here " + value.toString()));
-            firestoreService.setEntry(new Entry(entry: "Renuka Devi"));
-             print("I'm here 2");
-            },
-          )],
+          actions: [
+            IconButton(
+              icon: Icon(Icons.send),
+              onPressed: () {
+                _itemProvider.addItem(new Item(
+                    itemId: _uuid.v1(),
+                    itemName: "Item" + _uuid.v1(),
+                    itemCategory: ItemCategory.SWEET,
+                    unitPrice: 1.2));
+              },
+            )
+          ],
           title: Center(
               child: _plateContext == null
-                  ? Text("Items")
+                  ? Text("ITEMS")
                   : Text("${this._plate.plateItems.length} items selected")),
           bottom: TabBar(
             isScrollable: true,
@@ -78,27 +73,43 @@ class _ItemsWidgetState extends State<ItemsWidget> {
         body: TabBarView(
           children: ItemCategory.values.map((itemCategory) {
             return Center(
-              child: ListView.builder(
-                  padding: EdgeInsets.only(top: 10.0, bottom: 15.0),
-                  itemCount: this
-                      ._items
-                      .items
-                      .where((item) => item.itemCategory == itemCategory)
-                      .toList()
-                      .length,
-                  itemBuilder: (BuildContext context, int index) {
-                    Item item = this
-                        ._items
-                        .items
-                        .where((item) => item.itemCategory == itemCategory)
-                        .toList()[index];
-                    bool isSelected;
-                    if (_plateContext != null) {
-                      isSelected = this._plate.isItemExists(item);
+              child: StreamBuilder<List<Item>>(
+                stream: _itemProvider.items,
+                builder: (context, snapshot) {
+                  print(snapshot.connectionState);
+                  print(snapshot.hasData);
+                        if (snapshot.connectionState == ConnectionState.active) {
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                              padding: EdgeInsets.only(top: 10.0, bottom: 15.0),
+                              itemCount: snapshot.data
+                                  .where(
+                                      (item) => item.itemCategory == itemCategory)
+                                  .toList()
+                                  .length,
+                              itemBuilder: (context, index) {
+                                Item item = snapshot.data
+                                    .where(
+                                        (item) => item.itemCategory == itemCategory)
+                                    .toList()[index];
+                                bool isSelected;
+                                if (_plateContext != null) {
+                                  isSelected = this._plate.isItemExists(item);
+                                }
+                                return new ItemWidget(
+                                    item, isSelected, _plateContext, this.refresh);
+                              });
+                        }
+                        else {
+                          return Container();
+                        }
+                        }
+                      else {
+                        return Container();
+                        }
                     }
-                    return ItemWidget(
-                        item, isSelected, _plateContext, this.refresh);
-                  }),
+
+              ),
             );
           }).toList(),
         ),
@@ -132,7 +143,7 @@ class _ItemsWidgetState extends State<ItemsWidget> {
   }
 
   refresh() {
-    print(this._items.items.length);
+    print(this._itemProvider.items.length);
     setState(() {});
   }
 }

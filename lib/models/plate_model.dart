@@ -45,7 +45,7 @@ class Plate extends ChangeNotifier {
 
   List<PlateItem> get plateItems => _plateItems;
 
-  void loadDummyData() {
+  /*void loadDummyData() {
     Item idly = new Item(1, "Idly", null, null, ItemCategory.tiffin, 5);
     Item sambar = new Item(2, "Sambar Vadai | Chutney | Coffee | Elaichi ",
         null, null, ItemCategory.tiffin, 3);
@@ -88,7 +88,7 @@ class Plate extends ChangeNotifier {
     this.addPlateItem(plate10);
     this.addPlateItem(plate11);
     this.addPlateItem(plate12);
-  }
+  }*/
 
   bool isItemExists(Item _item) {
     var contain = this
@@ -103,8 +103,7 @@ class Plate extends ChangeNotifier {
   void addNewItem(Item _item) {
     if (!isItemExists(_item)) {
       PlateItem _plateItem = new PlateItem(
-          new Item(_item.itemId, _item.itemName, _item.itemDescription,
-              _item.subItems, _item.itemCategory, _item.unitPrice),
+          _item,
           this.persons.toInt());
       this._plateItems.add(_plateItem);
       calculatePrice();

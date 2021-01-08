@@ -20,23 +20,23 @@ class PlatesItemWidget extends StatelessWidget {
     print("________PlatesItemWidget for " + this._plateItem.item.itemName);
     _width = MediaQuery.of(contextPlatesItemWidget).size.width;
     switch (this._plateItem.item.itemCategory) {
-      case ItemCategory.sweet:
+      case ItemCategory.SWEET:
         itemColor = Colors.deepOrange;
         itemBackgroundColor = Colors.orange[50];
         break;
-      case ItemCategory.tiffin:
+      case ItemCategory.TIFFIN:
         itemColor = Colors.purpleAccent;
         itemBackgroundColor = Colors.pink[50];
         break;
-      case ItemCategory.snacks:
+      case ItemCategory.SNACKS:
         itemColor = Colors.yellowAccent;
         itemBackgroundColor = Colors.yellow[50];
         break;
-      case ItemCategory.meals:
+      case ItemCategory.MEALS:
         itemColor = Colors.green;
         itemBackgroundColor = Colors.green[50];
         break;
-      case ItemCategory.disposbles:
+      case ItemCategory.DISPOSABLES:
         itemColor = Colors.grey;
         itemBackgroundColor = Colors.grey[50];
         break;
