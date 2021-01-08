@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart'  hide BuildContext;
+import 'package:provider/provider.dart' hide BuildContext;
 import 'package:sai_caterers/models/item_category_model.dart';
 import 'package:sai_caterers/models/item_model.dart';
 import 'package:sai_caterers/models/plate_model.dart';
@@ -8,71 +8,43 @@ import 'package:sai_caterers/screens/edit_item_screen.dart';
 import 'package:circular_check_box/circular_check_box.dart';
 
 class ItemWidget extends StatefulWidget {
-  Item _item;
-  int _index;
-  double _width;
-  Color itemColor;
-  bool isSelected;
-  Plate _plate;
-  BuildContext _plateContext;
+  final Item _item;
+  final BuildContext _plateContext;
   final Function() refresh;
-  ItemWidget(this._item, this.isSelected, this._plateContext, this.refresh){
+  final bool isSelected;
+  ItemWidget(this._item, this.isSelected, this._plateContext, this.refresh) {
     print("ItemWidget Constructor ______ " + this._item.itemName);
-    createState();
   }
 
-  _ItemWidgetState createState() =>
-      _ItemWidgetState(this._item, this.isSelected, this._plateContext, this.refresh);
+  _ItemWidgetState createState() => _ItemWidgetState();
 }
 
 class _ItemWidgetState extends State<ItemWidget> {
-  Item _item;
-  int _index;
   double _width;
   Color itemColor;
-  bool isSelected;
   Plate _plate;
-  BuildContext _plateContext;
-  final Function() refresh;
+  bool isSelected;
 
-  _ItemWidgetState(this._item, this.isSelected, this._plateContext, this.refresh){
-    print("ItemWidgetState Constructor ______ " + this._item.itemName);
+@override
+  void initState() {
+  this.isSelected = widget.isSelected;
+  super.initState();
   }
-
   @override
   Widget build(BuildContext contextItemWidget) {
-    print("________ItemWidget for " + this._item.itemName);
-    if (this._plateContext != null) {
-      _plate = Provider.of<Plate>(_plateContext, listen: false);
+    print("________ItemWidget for " + widget._item.itemName);
+    if (widget._plateContext != null) {
+      _plate = Provider.of<Plate>(widget._plateContext, listen: false);
     }
     _width = MediaQuery.of(contextItemWidget).size.width;
-    switch (this._item.itemCategory) {
-      case ItemCategory.SWEET:
-        itemColor = Colors.deepOrange;
-        break;
-      case ItemCategory.TIFFIN:
-        itemColor = Colors.purpleAccent;
-        break;
-      case ItemCategory.SNACKS:
-        itemColor = Colors.yellowAccent;
-        break;
-      case ItemCategory.MEALS:
-        itemColor = Colors.green;
-        break;
-      case ItemCategory.DISPOSABLES:
-        itemColor = Colors.grey;
-        break;
-      default:
-        itemColor = Colors.black;
-        break;
-    }
+    itemColor = getItemColor(itemCategory: widget._item.itemCategory);
+
     return InkWell(
       child: Container(
         padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-        //height: 140,
         width: double.maxFinite,
         child: Card(
-          color: (this.isSelected == true)?Colors.green[100]:Colors.white,
+          color: (this.isSelected == true) ? Colors.green[100] : Colors.white,
           elevation: 5,
           shape: Border(left: BorderSide(color: this.itemColor, width: 3)),
           child: Padding(
@@ -82,8 +54,8 @@ class _ItemWidgetState extends State<ItemWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ItemNameWidget(this._item.itemName),
-                    ItemUnitPriceWidget(this._item.unitPrice),
+                    ItemNameWidget(widget._item.itemName),
+                    ItemUnitPriceWidget(widget._item.unitPrice),
                     this.isSelected == null
                         ? Container()
                         : CircularCheckBox(
@@ -103,36 +75,42 @@ class _ItemWidgetState extends State<ItemWidget> {
         ),
       ),
       onTap: () {
-        print("onTap hit with ${this.isSelected}");
-        if (this.isSelected == null) {
-          showDialog(
-            context: contextItemWidget,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: RichText(
-                  textAlign: TextAlign.center ,
-                    text: TextSpan(
-                        text: "Edit Item",
-                        style: TextStyle(
-                            color: Colors.deepOrange,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold))),
-                content: EditItemScreen(_item, contextItemWidget, true, this.refresh),
-              );
-            },
-          );
-        } else if (this.isSelected) {
-          this.isSelected = false;
-          this._plate.removeItem(this._item);
-          widget.refresh();
-        } else {
-          this.isSelected = true;
-          this._plate.addNewItem(this._item);
-          widget.refresh();
-        }
-        setState(() {});
+        onItemClick(contextItemWidget);
       },
     );
+  }
+
+  void onItemClick(BuildContext contextItemWidget) {
+    print("onTap hit with ${this.isSelected}");
+    if (this.isSelected == null) {
+      showDialog(
+        context: contextItemWidget,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                    text: "Edit Item",
+                    style: TextStyle(
+                        color: Colors.deepOrange,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold))),
+            content: EditItemScreen(
+                widget._item, contextItemWidget, true, widget.refresh),
+          );
+        },
+      );
+    } else if (this.isSelected) {
+      this.isSelected = false;
+      this._plate.removeItem(widget._item);
+      widget.refresh();
+    } else {
+      this.isSelected = true;
+      this._plate.addNewItem(widget._item);
+     //We don't have to refresh the list view when an item is selected
+      // widget.refresh();
+    }
+    setState(() {});
   }
 
   Widget ItemUnitPriceWidget(double _plateItemPrice) {
@@ -146,7 +124,9 @@ class _ItemWidgetState extends State<ItemWidget> {
                   locale: 'en_IN', symbol: '₹', decimalDigits: 0)
               .format(_plateItemPrice),
           style: TextStyle(
-              color: Colors.deepOrange, fontSize: 26, fontWeight: FontWeight.bold),
+              color: Colors.deepOrange,
+              fontSize: 26,
+              fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -161,7 +141,9 @@ class _ItemWidgetState extends State<ItemWidget> {
         text: TextSpan(
           text: _plateItemName,
           style: TextStyle(
-              color: Colors.deepOrange, fontSize: 20, fontWeight: FontWeight.bold),
+              color: Colors.deepOrange,
+              fontSize: 20,
+              fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -196,5 +178,29 @@ class _ItemWidgetState extends State<ItemWidget> {
         ),
       ),
     );
+  }
+
+  // get item category color
+  Color getItemColor({itemCategory}) {
+    switch (itemCategory) {
+      case ItemCategory.SWEET:
+        return Colors.deepOrange;
+        break;
+      case ItemCategory.TIFFIN:
+        return Colors.purpleAccent;
+        break;
+      case ItemCategory.SNACKS:
+        return Colors.yellowAccent;
+        break;
+      case ItemCategory.MEALS:
+        return Colors.green;
+        break;
+      case ItemCategory.DISPOSABLES:
+        return Colors.grey;
+        break;
+      default:
+        return Colors.black;
+        break;
+    }
   }
 }

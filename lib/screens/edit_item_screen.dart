@@ -8,33 +8,27 @@ import 'package:sai_caterers/providers/item_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class EditItemScreen extends StatefulWidget {
-  Item _item;
-  BuildContext contextItemWidget;
-  bool _edit;
+  final Item _item;
+  final BuildContext contextItemWidget;
+  final bool _edit;
   final Function() refresh;
+  final Uuid _uuid = new Uuid();
   EditItemScreen(this._item, this.contextItemWidget, this._edit, this.refresh);
 
   _EditItemScreenState createState() =>
-      _EditItemScreenState(this._item, this.contextItemWidget, this._edit, this.refresh);
+      _EditItemScreenState();
 }
 
 class _EditItemScreenState extends State<EditItemScreen> {
-  Item _item;
   ItemProvider _itemProvider;
-  bool _edit;
   String _itemName;
   double _unitPrice;
   ItemCategory _itemCategory;
-  BuildContext contextItemWidget;
-  Uuid _uuid;
-  final Function() refresh;
-  _EditItemScreenState(this._item, this.contextItemWidget, this._edit, this.refresh);
 
   @override
   void initState() {
-    this._itemProvider = Provider.of<ItemProvider>(contextItemWidget, listen: false);
-    _edit ? null: _itemCategory = ItemCategory.SWEET;
-    _uuid = new Uuid();
+    this._itemProvider = Provider.of<ItemProvider>(widget.contextItemWidget, listen: false);
+    widget._edit ? null: _itemCategory = ItemCategory.SWEET;
     super.initState();
   }
 
@@ -51,7 +45,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               DropdownButton<ItemCategory>(
-                  value: _edit ? _item.itemCategory : _itemCategory,
+                  value: widget._edit ? widget._item.itemCategory : _itemCategory,
                   icon: Icon(Icons.arrow_downward),
                   iconSize: 15,
                   elevation: 16,
@@ -61,8 +55,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
                       fontWeight: FontWeight.bold),
                   onChanged: (ItemCategory itemCategory) {
                     setState(() {
-                      _edit?
-                          _item.itemCategory = itemCategory
+                      widget._edit?
+                          widget._item.itemCategory = itemCategory
                           :_itemCategory = itemCategory;
                     });
                   },
@@ -87,7 +81,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                   keyboardType: TextInputType.text,
                   enableInteractiveSelection: false,
                   autofocus: false,
-                  initialValue: _edit ? this._item.itemName.toString() : "",
+                  initialValue: widget._edit ? widget._item.itemName.toString() : "",
                   decoration: InputDecoration(
                     labelText: "Item Name",
                     labelStyle:
@@ -100,8 +94,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
                     ),
                   ),
                   onChanged: ((String itemName){
-                    _edit?
-                    _item.itemName = itemName
+                    widget._edit?
+                    widget._item.itemName = itemName
                         : this._itemName = itemName;
                   }),
                 ),
@@ -117,7 +111,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                   keyboardType: TextInputType.number,
                   autofocus: false,
                   enableInteractiveSelection: false,
-                  initialValue: _edit? this._item.unitPrice.toString() : "",
+                  initialValue: widget._edit? widget._item.unitPrice.toString() : "",
                   decoration: InputDecoration(
                     labelText: "Unit Price",
                     labelStyle:
@@ -132,8 +126,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
                     prefixStyle: const TextStyle(color: Colors.deepOrange),
                   ),
                   onChanged: ((String unitPrice){
-                    _edit?
-                    _item.unitPrice = double.parse(unitPrice)
+                    widget._edit?
+                    widget._item.unitPrice = double.parse(unitPrice)
                         : _unitPrice = double.parse(unitPrice);
                   }),
                 ),
@@ -154,11 +148,11 @@ class _EditItemScreenState extends State<EditItemScreen> {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 onPressed: () {
-                  _edit?
-                      _itemProvider.editItem(this._item)
+                  widget._edit?
+                      _itemProvider.editItem(widget._item)
                       :_itemProvider.addItem(createItem(_itemName, _unitPrice, _itemCategory));
                   Navigator.pop(context);
-                  this.refresh();
+                  widget.refresh();
                 },
               ),
             ]),
@@ -169,7 +163,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
   Item createItem(
       String itemName, double unitPrice, ItemCategory itemCategory) {
     Item item = new Item(
-        itemId: _uuid.v1(),
+        itemId: widget._uuid.v1(),
         itemName: itemName,
         itemDescription: null,
         itemCategory: itemCategory,
