@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'  hide BuildContext;
 import 'package:sai_caterers/models/plate_item_model.dart';
-import 'package:sai_caterers/models/plate_model.dart';
+import 'package:sai_caterers/models/event_model.dart';
 import 'dart:math';
 
 class PlatesItemSlider extends StatefulWidget {
@@ -13,13 +13,13 @@ class PlatesItemSlider extends StatefulWidget {
 class _PlatesItemSliderState extends State<PlatesItemSlider> {
   int _index;
   int _min = 0, _max = 0, _value = 0;
-  Plate _plate;
+  OrderEvent _plate;
   PlateItem _plateItem;
   _PlatesItemSliderState(this._index);
 
   @override
   Widget build(BuildContext context) {
-    this._plate = Provider.of<Plate>(context, listen: false);
+    this._plate = Provider.of<OrderEvent>(context, listen: false);
     this._plateItem = this._plate.plateItems[_index];
     print("_________PlatesItemSliderState for " + this._plateItem.item.itemName);
     _min = 0;

@@ -5,7 +5,7 @@ import '../models/item_model.dart';
 
 //init_firebase
 class ItemProvider extends ChangeNotifier {
-  final firestoreService = FirestoreService();
+  final firestoreService = FirestoreService.getInstance();
 
   Stream<List<Item>> get items => firestoreService.getItems();
 

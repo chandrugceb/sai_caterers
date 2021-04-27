@@ -3,16 +3,18 @@ import 'package:flutter/foundation.dart';
 import 'package:sai_caterers/models/item_category_model.dart';
 
 class Item{
+  //properties
   String itemId;
   String itemName;
   String itemDescription;
   ItemCategory itemCategory;
   double unitPrice;
 
+  //constructors
   Item({@required this.itemId, @required this.itemName, this.itemDescription,
       @required this.itemCategory, @required this.unitPrice});
 
-
+  //json to object transformation functions
   factory Item.fromJson(Map<String, dynamic> json){
     return Item(
       itemId: json['itemId'],
@@ -32,6 +34,4 @@ class Item{
       'unitPrice':unitPrice
     };
   }
-
-
 }

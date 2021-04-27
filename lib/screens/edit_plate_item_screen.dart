@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart'  hide BuildContext;
-import 'package:sai_caterers/models/plate_model.dart';
+import 'package:sai_caterers/models/event_model.dart';
 
 class EditPlateItemScreen extends StatefulWidget {
   int _index;
@@ -15,10 +15,10 @@ class EditPlateItemScreen extends StatefulWidget {
 
 class _EditPlateItemScreenState extends State<EditPlateItemScreen> {
   int _index;
-  Plate _plate;
+  OrderEvent _plate;
   BuildContext contextPlatesItemWidget;
   _EditPlateItemScreenState(this._index, this.contextPlatesItemWidget){
-    this._plate = Provider.of<Plate>(contextPlatesItemWidget, listen:false);
+    this._plate = Provider.of<OrderEvent>(contextPlatesItemWidget, listen:false);
   }
   @override
   Widget build(BuildContext context) {
