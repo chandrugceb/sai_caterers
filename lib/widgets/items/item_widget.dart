@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart' hide BuildContext;
 import 'package:sai_caterers/models/item_category_model.dart';
 import 'package:sai_caterers/models/item_model.dart';
-import 'package:sai_caterers/models/plate_model.dart';
+import 'package:sai_caterers/models/event_model.dart';
 import 'package:sai_caterers/screens/edit_item_screen.dart';
 import 'package:circular_check_box/circular_check_box.dart';
 
@@ -22,7 +22,7 @@ class ItemWidget extends StatefulWidget {
 class _ItemWidgetState extends State<ItemWidget> {
   double _width;
   Color itemColor;
-  Plate _plate;
+  OrderEvent _plate;
   bool isSelected;
 
 @override
@@ -34,7 +34,7 @@ class _ItemWidgetState extends State<ItemWidget> {
   Widget build(BuildContext contextItemWidget) {
     print("________ItemWidget for " + widget._item.itemName);
     if (widget._plateContext != null) {
-      _plate = Provider.of<Plate>(widget._plateContext, listen: false);
+      _plate = Provider.of<OrderEvent>(widget._plateContext, listen: false);
     }
     _width = MediaQuery.of(contextItemWidget).size.width;
     itemColor = getItemColor(itemCategory: widget._item.itemCategory);

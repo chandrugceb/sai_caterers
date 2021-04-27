@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' hide BuildContext;
-import 'package:sai_caterers/models/plate_model.dart';
+import 'package:sai_caterers/models/event_model.dart';
 import 'package:sai_caterers/widgets/plates/plates_display_persons_widget.dart';
 
 class PlatesDisplayWidget extends StatelessWidget {
-  Plate _plate;
+  OrderEvent _plate;
   BuildContext parentContext;
 
   PlatesDisplayWidget(this.parentContext);
@@ -15,7 +15,7 @@ class PlatesDisplayWidget extends StatelessWidget {
     if (parentContext == null) {
       this.parentContext = contextPlatesDisplayWidget;
     }
-    this._plate = Provider.of<Plate>(parentContext);
+    this._plate = Provider.of<OrderEvent>(parentContext);
 
     return Column(
       children: [

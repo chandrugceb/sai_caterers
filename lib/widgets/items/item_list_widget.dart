@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' hide BuildContext;
-import 'package:sai_caterers/models/plate_model.dart';
+import 'package:sai_caterers/models/event_model.dart';
 import 'package:sai_caterers/widgets/plates/plates_item_widget.dart';
 
 class ItemListWidget extends StatelessWidget {
@@ -9,7 +9,7 @@ class ItemListWidget extends StatelessWidget {
     print("________PlatesItemListWidget");
     return Expanded(
       child: Container(
-        child: Consumer<Plate>(
+        child: Consumer<OrderEvent>(
           builder: (contextConsumer, data, child) {
             return ListView.builder(
               padding: EdgeInsets.only(top: 10.0, bottom: 15.0),

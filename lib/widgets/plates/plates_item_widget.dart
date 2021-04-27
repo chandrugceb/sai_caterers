@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart'  hide BuildContext;
 import 'package:sai_caterers/models/item_category_model.dart';
 import 'package:sai_caterers/models/plate_item_model.dart';
-import 'package:sai_caterers/models/plate_model.dart';
+import 'package:sai_caterers/models/event_model.dart';
 import 'package:sai_caterers/screens/edit_plate_item_screen.dart';
 import 'package:sai_caterers/widgets/plates/plates_item_slider_widget.dart';
 

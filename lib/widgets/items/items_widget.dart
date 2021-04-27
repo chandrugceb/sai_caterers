@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sai_caterers/models/item_category_model.dart';
 import 'package:sai_caterers/models/item_model.dart';
 import 'package:sai_caterers/providers/item_provider.dart';
-import 'package:sai_caterers/models/plate_model.dart';
+import 'package:sai_caterers/models/event_model.dart';
 import 'package:sai_caterers/screens/edit_item_screen.dart';
 import 'package:sai_caterers/widgets/items/item_widget.dart';
 import 'package:uuid/uuid.dart';
@@ -23,7 +23,7 @@ class ItemsWidget extends StatefulWidget {
 }
 
 class _ItemsWidgetState extends State<ItemsWidget> {
-  Plate _plate;
+  OrderEvent _plate;
   ItemProvider _itemProvider;
   Uuid _uuid;
   _ItemsWidgetState() {
@@ -33,7 +33,7 @@ class _ItemsWidgetState extends State<ItemsWidget> {
   @override
   void initState() {
     if (widget._plateContext != null) {
-      _plate = Provider.of<Plate>(widget._plateContext);
+      _plate = Provider.of<OrderEvent>(widget._plateContext);
       _itemProvider = Provider.of<ItemProvider>(widget._plateContext);
     }
 
