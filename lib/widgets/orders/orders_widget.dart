@@ -1,27 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sai_caterers/models/event_model.dart';
 import 'package:sai_caterers/providers/event_provider.dart';
 import 'package:sai_caterers/widgets/plates/events_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
-
-// Example holidays
-final Map<DateTime, List> _holidays = {
-  DateTime(2021, 1, 1): ['New Year\'s Day'],
-  DateTime(2021, 1, 6): ['Epiphany'],
-  DateTime(2021, 2, 14): ['Valentine\'s Day'],
-  DateTime(2021, 4, 21): ['Easter Sunday'],
-  DateTime(2021, 4, 22): ['Easter Monday'],
-};
+import 'package:uuid/uuid.dart';
 
 class OrdersWidget extends StatefulWidget {
   final spinkit = SpinKitRipple(
     color: Colors.deepOrange,
     size: 200.0,
   );
-  OrdersWidget() {}
 
   @override
   _OrdersWidgetState createState() => _OrdersWidgetState();
@@ -35,7 +27,7 @@ class _OrdersWidgetState extends State<OrdersWidget>
   //Only the Events of selected date
   List<OrderEvent> _selectedEvents;
 
-  OrderEventProvider _orderEventProvider;
+  OrderEventsProvider _orderEventProvider;
 
   AnimationController _animationController;
   CalendarController _calendarController;
@@ -90,8 +82,9 @@ class _OrdersWidgetState extends State<OrdersWidget>
   Widget build(BuildContext context) {
     print('Build: _OrdersWidgetState');
     _selectedEvents = [];
-    _orderEventProvider = Provider.of<OrderEventProvider>(context);
-    _selectedEvents = _events[_selectedDay] ?? [];
+    _orderEventProvider =
+        Provider.of<OrderEventsProvider>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text("ORDERS")),
@@ -112,7 +105,7 @@ class _OrdersWidgetState extends State<OrdersWidget>
                   ],
                 );
               } else {
-                return Container();
+                return widget.spinkit;
               }
             } else {
               return widget.spinkit;
@@ -120,6 +113,36 @@ class _OrdersWidgetState extends State<OrdersWidget>
           },
         ),
       ]),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final Uuid _uuid = new Uuid();
+          OrderEvent _orderEvent = new OrderEvent(
+              eventId: _uuid.v1().toString(),
+              eventName: "New Event on " + _selectedDay.toString(),
+              startDateTime: _selectedDay,
+              endDateTime: null,
+              orderDeliveryDateTime: null,
+              orderReadyDateTime: null,
+              customerName: null,
+              customerPhone: null,
+              cookingVenue: null,
+              eventNotes: null,
+              persons: 1);
+          _orderEventProvider.addEvent(_orderEvent);
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MultiProvider(providers: [
+                  ListenableProvider<OrderEventsProvider>(
+                      create: (context) => _orderEventProvider),
+                  ListenableProvider<OrderEvent>(
+                      create: (context) => _orderEvent),
+                ], child: EventsWidget()),
+              ));
+        },
+        child: Icon(Icons.add_sharp, color: Colors.white),
+        backgroundColor: Colors.deepOrange,
+      ),
     );
   }
 
@@ -130,8 +153,7 @@ class _OrdersWidgetState extends State<OrdersWidget>
       locale: 'en_EN',
       calendarController: _calendarController,
       events: _events,
-      holidays: _holidays,
-      initialCalendarFormat: CalendarFormat.week,
+      initialCalendarFormat: CalendarFormat.month,
       formatAnimation: FormatAnimation.slide,
       startingDayOfWeek: StartingDayOfWeek.sunday,
       availableGestures: AvailableGestures.all,
@@ -143,8 +165,6 @@ class _OrdersWidgetState extends State<OrdersWidget>
         outsideDaysVisible: false,
         weekendStyle:
             TextStyle().copyWith(fontSize: 20.0, color: Colors.blueGrey[500]),
-        holidayStyle:
-            TextStyle().copyWith(fontSize: 20.0, color: Colors.red[800]),
         weekdayStyle:
             TextStyle().copyWith(fontSize: 20.0, color: Colors.grey[800]),
       ),
@@ -206,17 +226,6 @@ class _OrdersWidgetState extends State<OrdersWidget>
               ),
             );
           }
-
-          if (holidays.isNotEmpty) {
-            children.add(
-              Positioned(
-                right: -2,
-                top: -2,
-                child: _buildHolidaysMarker(),
-              ),
-            );
-          }
-
           return children;
         },
       ),
@@ -263,32 +272,29 @@ class _OrdersWidgetState extends State<OrdersWidget>
     );
   }
 
-  Widget _buildHolidaysMarker() {
-    return Icon(
-      Icons.add_box,
-      size: 20.0,
-      color: Colors.blueGrey[800],
-    );
-  }
-
   Widget _buildEventList() {
     print("====================================>_buildEventList " +
         DateTime.now().toString());
     return ListView(
       shrinkWrap: true,
       children: _selectedEvents
-          .map((event) => Container(
-                decoration: BoxDecoration(
-                  border: Border.all(width: 0.8),
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
+          .map((_event) => Container(
                 margin:
                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                 child: ListTile(
-                  title: Text(event.eventName),
+                  title: _eventItemWidget(_event),
                   onTap: () {
-                    print('$event tapped!');
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => EventsWidget(event)));
+                    print(_event.eventName + 'tapped!');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MultiProvider(providers: [
+                            ListenableProvider<OrderEventsProvider>(
+                                create: (context) => _orderEventProvider),
+                            ListenableProvider<OrderEvent>(
+                                create: (context) => _event),
+                          ], child: EventsWidget()),
+                        ));
                   },
                 ),
               ))
@@ -301,6 +307,7 @@ class _OrdersWidgetState extends State<OrdersWidget>
     snapshot.data.forEach((_orderEvent) {
       insertEvents(_orderEvent);
     });
+    _selectedEvents = _events[_selectedDay] ?? [];
   }
 
   void insertEvents(OrderEvent _orderEvent) {
@@ -314,7 +321,26 @@ class _OrdersWidgetState extends State<OrdersWidget>
         0);
 
     _events.update(orderEventStartDateTime, (value) {
+      value.add(_orderEvent);
       return value;
     }, ifAbsent: () => [_orderEvent]);
+  }
+
+  Widget _eventItemWidget(OrderEvent _orderEvent) {
+    return Card(
+      elevation: 10,
+      child: ListTile(
+        leading: Icon(Icons.timelapse_outlined, color: Colors.deepOrange),
+        title: Text(_orderEvent.eventName),
+        subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+          Text(DateFormat('dd MMMM, yyyy – kk:mm')
+              .format(_orderEvent.startDateTime)),
+          Text(_orderEvent.persons.toString() + " persons"),
+        ]),
+      ),
+    );
+    Text(_orderEvent.eventName);
   }
 }

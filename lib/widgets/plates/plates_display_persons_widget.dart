@@ -27,11 +27,11 @@ class PlatesDisplayPersonsWidget extends StatelessWidget {
                   .format(count)
               : '$count',
           style: TextStyle(
-              color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+              color: Colors.deepOrange, fontSize: 26, fontWeight: FontWeight.bold),
           children: <TextSpan>[
             TextSpan(
               text: '\n$subText',
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(color: Colors.deepOrangeAccent, fontSize: 16),
             ),
           ],
         ),

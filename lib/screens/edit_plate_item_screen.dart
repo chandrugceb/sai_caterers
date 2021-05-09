@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart'  hide BuildContext;
 import 'package:sai_caterers/models/event_model.dart';
+import 'package:sai_caterers/providers/event_provider.dart';
 
 class EditPlateItemScreen extends StatefulWidget {
   int _index;
@@ -15,10 +16,12 @@ class EditPlateItemScreen extends StatefulWidget {
 
 class _EditPlateItemScreenState extends State<EditPlateItemScreen> {
   int _index;
-  OrderEvent _plate;
+  OrderEvent _orderEvent;
+  OrderEventsProvider _orderEventsProvider;
   BuildContext contextPlatesItemWidget;
   _EditPlateItemScreenState(this._index, this.contextPlatesItemWidget){
-    this._plate = Provider.of<OrderEvent>(contextPlatesItemWidget, listen:false);
+    this._orderEventsProvider = Provider.of<OrderEventsProvider>(contextPlatesItemWidget, listen: false);
+    this._orderEvent = Provider.of<OrderEvent>(contextPlatesItemWidget, listen:false);
   }
   @override
   Widget build(BuildContext context) {
@@ -42,7 +45,7 @@ class _EditPlateItemScreenState extends State<EditPlateItemScreen> {
                   keyboardType: TextInputType.number,
                   enableInteractiveSelection: false,
                   autofocus: false,
-                  initialValue: this._plate.plateItems[_index].item.unitPrice.toString(),
+                  initialValue: this._orderEvent.plateItems[_index].item.unitPrice.toString(),
                   decoration: InputDecoration(
                       labelText: "Unit Price",
                       labelStyle: const TextStyle(color: Colors.amberAccent, fontSize: 16),
@@ -55,10 +58,11 @@ class _EditPlateItemScreenState extends State<EditPlateItemScreen> {
                       prefixText: '₹',
                       prefixStyle: const TextStyle(color: Colors.amber)),
                   onChanged: (String value) {
-                    this._plate.plateItems[_index].item.unitPrice =
+                    this._orderEvent.plateItems[_index].item.unitPrice =
                         double.parse(value);
-                    this._plate.plateItems[_index].updatePlatePrice();
-                    this._plate.calculatePrice();
+                    this._orderEvent.plateItems[_index].updatePlatePrice();
+                    this._orderEvent.calculatePrice();
+                    this._orderEventsProvider.editEvent(_orderEvent);
                     setState(() {});
                   }),
             ),
@@ -70,7 +74,7 @@ class _EditPlateItemScreenState extends State<EditPlateItemScreen> {
                   keyboardType: TextInputType.number,
                   autofocus: true,
                   enableInteractiveSelection: false,
-                  initialValue: this._plate.plateItems[_index].qty.toString(),
+                  initialValue: this._orderEvent.plateItems[_index].qty.toString(),
                   decoration: InputDecoration(
                     labelText: "Qty",
                     labelStyle: const TextStyle(color: Colors.amberAccent, fontSize: 16),
@@ -83,11 +87,12 @@ class _EditPlateItemScreenState extends State<EditPlateItemScreen> {
                   ),
                   onChanged: (String value) {
                     this
-                        ._plate
+                        ._orderEvent
                         .plateItems[_index]
                         .updatePlateQty(int.parse(value));
-                    this._plate.plateItems[_index].updatePlatePrice();
-                    this._plate.calculatePrice();
+                    this._orderEvent.plateItems[_index].updatePlatePrice();
+                    this._orderEvent.calculatePrice();
+                    this._orderEventsProvider.editEvent(_orderEvent);
                     setState(() {});
                   }),
             )
@@ -101,7 +106,7 @@ class _EditPlateItemScreenState extends State<EditPlateItemScreen> {
               text: TextSpan(
                 text: NumberFormat.currency(
                     locale: 'en_IN', symbol: '₹', decimalDigits: 0)
-                    .format(this._plate.plateItems[_index].plateItemPrice),
+                    .format(this._orderEvent.plateItems[_index].plateItemPrice),
                 style: TextStyle(
                     color: Colors.amber,
                     fontSize: 50,

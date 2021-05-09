@@ -5,7 +5,7 @@ import 'package:sai_caterers/models/item_category_model.dart';
 import 'package:sai_caterers/models/item_model.dart';
 import 'package:sai_caterers/models/event_model.dart';
 import 'package:sai_caterers/screens/edit_item_screen.dart';
-import 'package:circular_check_box/circular_check_box.dart';
+//import 'package:circular_check_box/circular_check_box.dart';
 
 class ItemWidget extends StatefulWidget {
   final Item _item;
@@ -27,8 +27,8 @@ class _ItemWidgetState extends State<ItemWidget> {
 
 @override
   void initState() {
-  this.isSelected = widget.isSelected;
-  super.initState();
+    this.isSelected = widget.isSelected;
+    super.initState();
   }
   @override
   Widget build(BuildContext contextItemWidget) {
@@ -58,13 +58,13 @@ class _ItemWidgetState extends State<ItemWidget> {
                     ItemUnitPriceWidget(widget._item.unitPrice),
                     this.isSelected == null
                         ? Container()
-                        : CircularCheckBox(
-                            value: this.isSelected,
-                            checkColor: Colors.white,
+                        : circularCheckBox(
+                            this.isSelected
+                           /* checkColor: Colors.white,
                             activeColor: Colors.green,
                             inactiveColor: Colors.redAccent,
                             disabledColor: Colors.green,
-                            onChanged: null,
+                            onChanged: null,*/
                           )
                   ],
                 ),
