@@ -3,7 +3,7 @@ import 'package:sai_caterers/models/plate_item_model.dart';
 import 'item_category_model.dart';
 import 'item_model.dart';
 
-class OrderEvent {
+class OrderEvent extends ChangeNotifier {
   //properties
   String eventId;
   String eventName;
@@ -17,8 +17,8 @@ class OrderEvent {
   String eventNotes;
   int persons = 1;
   List<PlateItem> plateItems;
-  double totalPrice;
-  double perPlatePrice;
+  double totalPrice = 1;
+  double perPlatePrice = 1;
 
   //constructors
   OrderEvent(
@@ -26,15 +26,18 @@ class OrderEvent {
       @required this.eventName,
       @required this.startDateTime,
       @required this.endDateTime,
-      @required DateTime orderDeliveryDateTime,
-      @required DateTime orderReadyDateTime,
-      @required String customerName,
-      @required String customerPhone,
-      @required String cookingVenue,
-      @required String eventNotes,
+      @required this.orderDeliveryDateTime,
+      @required this.orderReadyDateTime,
+      @required this.customerName,
+      @required this.customerPhone,
+      @required this.cookingVenue,
+      @required this.eventNotes,
       @required this.persons,
       this.plateItems}) {
-    plateItems = new List<PlateItem>();
+    if(plateItems == null){
+      plateItems = <PlateItem>[];
+    }
+    this.calculatePrice();
   }
 
   //helper functions
@@ -50,13 +53,21 @@ class OrderEvent {
 
   void calculatePrice() {
     double _tempPerPlatePrice = 0;
-    this.plateItems.forEach((plateItem) {
-      _tempPerPlatePrice = _tempPerPlatePrice + plateItem.plateItemPrice;
-    });
+    if(this.plateItems != null){
+      this.plateItems.forEach((plateItem) {
+        _tempPerPlatePrice = _tempPerPlatePrice + plateItem.plateItemPrice;
+      });
 
-    this.totalPrice = _tempPerPlatePrice;
-    this.perPlatePrice = this.totalPrice / this.persons;
+      this.totalPrice = _tempPerPlatePrice;
+      this.perPlatePrice = this.totalPrice / this.persons;
+    }
+    else{
+      this.totalPrice = 0;
+      this.perPlatePrice = 0;
+    }
+
     print("calculate price called");
+    notifyListeners();
   }
 
   bool isItemExists(Item _item) {
@@ -87,6 +98,7 @@ class OrderEvent {
       print(
           "after delete ${_item.itemName} exists of length ${this.plateItems.length}");
     }
+    calculatePrice();
   }
 
   //json to object transformation functions
@@ -102,7 +114,7 @@ class OrderEvent {
         customerPhone: json['customerPhone'],
         cookingVenue: json['cookingVenue'],
         eventNotes: json['eventNotes'],
-        persons: json['persons'],
+        persons: json['persons'] ?? 1,
         plateItems: json['plateItems']!=null?(json['plateItems'] as List)
             .map((_plateItem) => PlateItem.fromJson(_plateItem))
             .toList():null
@@ -122,7 +134,7 @@ class OrderEvent {
       'cookingVenue': cookingVenue,
       'eventNotes': eventNotes,
       'persons': persons,
-      'plateItems': plateItems.map((_plateItem) => _plateItem.toMap()).toList()
+      'plateItems': plateItems.map((_plateItem) => _plateItem.toMap()).toList(),
     };
   }
 }

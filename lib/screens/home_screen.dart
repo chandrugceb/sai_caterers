@@ -20,16 +20,16 @@ class _HomeScreenState extends State<HomeScreen> {
     DashboardWidget(),
     ItemsWidget(null),
     OrdersWidget(),
-    EventsWidget(null)
+    EventsWidget()
   ];
 
   ItemProvider _itemProvider;
-  OrderEventProvider _orderEventProvider;
+  OrderEventsProvider _orderEventProvider;
 
   @override
   void initState() {
     _itemProvider = new ItemProvider();
-    _orderEventProvider = new OrderEventProvider();
+    _orderEventProvider = new OrderEventsProvider();
     super.initState();
   }
 
@@ -37,8 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ListenableProvider<ItemProvider>(create: (context) => _itemProvider),
-        ListenableProvider<OrderEventProvider>(create: (context) => _orderEventProvider)
+        //ListenableProvider<ItemProvider>(create: (context) => _itemProvider),
+        ListenableProvider<OrderEventsProvider>(create: (context) => _orderEventProvider)
       ],
       child: Scaffold(
         body: _children[_currentTab],

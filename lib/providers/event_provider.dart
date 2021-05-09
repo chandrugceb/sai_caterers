@@ -3,7 +3,7 @@ import 'package:sai_caterers/models/oldevent_model.dart';
 import 'package:sai_caterers/models/event_model.dart';
 import 'package:sai_caterers/services/firestore_service.dart';
 
-class OrderEventProvider extends ChangeNotifier {
+class OrderEventsProvider extends ChangeNotifier {
   final firestoreService = FirestoreService.getInstance();
 
   Stream<List<OrderEvent>> get events => firestoreService.getEvents();

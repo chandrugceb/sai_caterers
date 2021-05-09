@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' hide BuildContext;
 import 'package:sai_caterers/models/event_model.dart';
+import 'package:sai_caterers/providers/event_provider.dart';
 import 'package:sai_caterers/widgets/plates/plates_display_persons_widget.dart';
 
 class PlatesDisplayWidget extends StatelessWidget {
-  OrderEvent _plate;
+  OrderEvent _event;
   BuildContext parentContext;
 
   PlatesDisplayWidget(this.parentContext);
@@ -15,14 +16,14 @@ class PlatesDisplayWidget extends StatelessWidget {
     if (parentContext == null) {
       this.parentContext = contextPlatesDisplayWidget;
     }
-    this._plate = Provider.of<OrderEvent>(parentContext);
+    this._event = Provider.of<OrderEvent>(parentContext);
 
     return Column(
       children: [
-        Container(height: 20, width: double.infinity,
+        Container(height: 5, width: double.infinity,
           child: DecoratedBox(
           decoration: BoxDecoration(
-              color: Colors.amber
+              color: Colors.amber[100],
           ),
         ),),
         Container(
@@ -34,24 +35,26 @@ class PlatesDisplayWidget extends StatelessWidget {
                         .headline4
                         .fontSize *
                     1.1 +
-                50.0,
+                30.0,
           ),
           alignment: Alignment.centerLeft,
-          color: Colors.amber, // Seting the background color of the container
+          color: Colors.amber[100], // Seting the background color of the container
           child: Row(
             children: <Widget>[
               PlatesDisplayPersonsWidget(
-                  0.25, false, _plate.persons, 'Persons'),
+                  0.25, false, _event.persons, 'Persons'),
               PlatesDisplayPersonsWidget(
-                  0.15, false, _plate.plateItems.length, 'Items'),
+                  0.15, false, _event.plateItems.length, 'Items'),
               PlatesDisplayPersonsWidget(
-                  0.4, true, _plate.totalPrice.toInt(), 'Total Cost'),
+                  0.4, true, _event.totalPrice.toInt(), 'Total Cost'),
               PlatesDisplayPersonsWidget(
-                  0.2, true, _plate.perPlatePrice.toInt(), 'Per Plate')
+                  0.2, true, _event.perPlatePrice.toInt(), 'Per Plate')
             ],
           ),
         ),
       ],
     );
   }
+
+
 }
