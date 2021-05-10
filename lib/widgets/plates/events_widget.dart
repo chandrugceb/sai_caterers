@@ -4,6 +4,8 @@ import 'package:provider/provider.dart' hide BuildContext;
 import 'package:sai_caterers/models/event_model.dart';
 import 'package:sai_caterers/providers/event_provider.dart';
 import 'package:sai_caterers/providers/item_provider.dart';
+import 'package:sai_caterers/screens/reports/pdf_preview_screen.dart';
+import 'package:sai_caterers/services/pdf_service.dart';
 import 'package:sai_caterers/widgets/items/items_widget.dart';
 import 'package:sai_caterers/widgets/plates/plates_display_widget.dart';
 import 'package:sai_caterers/widgets/plates/plates_item_list_widget.dart';
@@ -47,9 +49,13 @@ class PlatesSubWidget extends StatelessWidget {
         title: Text(_orderEvent.eventName),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.share_outlined),
+            icon: const Icon(Icons.picture_as_pdf_rounded),
             tooltip: 'Share',
-            onPressed: () {},
+            onPressed: () async {
+            PdfService _pdfService = new PdfService(_orderEvent);
+            await _pdfService.savePdf();
+            Navigator.push(_platesSubWidgetContext, MaterialPageRoute(builder: (context) => PDFPreviewScreen(_pdfService.finalDocPath)));
+            },
           ),
         ],
       ),
