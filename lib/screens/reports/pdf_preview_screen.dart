@@ -10,7 +10,7 @@ class PDFPreviewScreen extends StatelessWidget{
   Widget build(BuildContext context) {
     return PDFViewerScaffold(
         appBar: AppBar(
-          title: Text("Document"),
+          title: Text(this._filePath.split("/").last),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.share),
