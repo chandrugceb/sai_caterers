@@ -16,6 +16,7 @@ class PlatesItemListWidget extends StatelessWidget {
           builder: (contextConsumer, data, child) {
             return ListView.builder(
               shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               padding: EdgeInsets.only(top: 10.0, bottom: 60.0),
               itemCount: data.plateItems.length,
               itemBuilder: (BuildContext context, int index) {
